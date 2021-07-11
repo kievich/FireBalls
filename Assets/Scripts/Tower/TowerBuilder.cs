@@ -8,37 +8,39 @@ public class TowerBuilder : MonoBehaviour
     [SerializeField] private Block _blockTemplate;
     [SerializeField] private GameObject _buildPoint;
     [SerializeField] private Material[] _materials = new Material[2];
-
+    [SerializeField] private GameObject _blockCluster;
     private float _blockHeight;
-    List<Block> blocks = new List<Block>();
 
-    private void Start()
+    private void Awake()
     {
-        _blockHeight = _blockTemplate.GetComponent<MeshFilter>().sharedMesh.bounds.size.z;
-
-        build();
+        _blockHeight = _blockTemplate.GetComponent<MeshFilter>().sharedMesh.bounds.size.y * _blockTemplate.transform.localScale.y;
     }
 
-    private List<Block> build()
+    public Queue<Block> Build()
     {
+        Queue<Block> blocks = new Queue<Block>();
+        Vector3 currentSpawnPosition = _buildPoint.transform.position;
 
-        Transform currentBlock = _buildPoint.transform;
         for (int i = 0; i < _size; i++)
         {
-
-            currentBlock = SpawnBlock(currentBlock).transform;
-            currentBlock.GetComponent<MeshRenderer>().material = GetMaterialByNumber(i);
-
-            currentBlock.rotation *= Quaternion.Euler(0, 0, i * 1f);
+            Block block = SpawnBlock(currentSpawnPosition);
+            currentSpawnPosition = GetTopPoint(block);
+            block.SetMaterial(GetMaterialByNumber(i));
+            //block.transform.rotation *= Quaternion.Euler(0, i * 1f, 0);
+            blocks.Enqueue(block);
         }
 
-        return null;
+        return blocks;
     }
 
-    private Block SpawnBlock(Transform spawnpoint)
+    public float GetBlockHeight()
     {
-        return Instantiate(_blockTemplate, spawnpoint.position + new Vector3(0, _blockHeight, 0), _blockTemplate.transform.rotation, transform);
+        return _blockHeight;
+    }
 
+    private Block SpawnBlock(Vector3 spawnpoint)
+    {
+        return Instantiate(_blockTemplate, spawnpoint + new Vector3(0, _blockHeight / 2f, 0), Quaternion.identity, _blockCluster.transform);
     }
 
     private Material GetMaterialByNumber(int currentBlock)
@@ -48,6 +50,12 @@ public class TowerBuilder : MonoBehaviour
         else
             return _materials[1];
     }
+    private Vector3 GetTopPoint(Block block)
+    {
+        return block.transform.position + new Vector3(0, _blockHeight / 2f, 0);
+
+    }
+
 
 
 

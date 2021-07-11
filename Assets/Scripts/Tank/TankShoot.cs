@@ -1,12 +1,16 @@
 using UnityEngine;
+using DG.Tweening;
 
 public class TankShoot : MonoBehaviour
 {
-    [SerializeField] float _delay;
+    [SerializeField] private float _delay;
+    [SerializeField] private float _BulletSpeed;
+    [SerializeField] private float _recoilDistance;
 
     [SerializeField] private Bullet _bulletTemplate;
     [SerializeField] private Transform _spawnpoint;
     [SerializeField] private Transform _muzzleRoot;
+
 
     private float timeFromLastShoot;
 
@@ -14,6 +18,7 @@ public class TankShoot : MonoBehaviour
     {
         timeFromLastShoot = _delay;
     }
+
     private void Update()
     {
         timeFromLastShoot += Time.deltaTime;
@@ -31,6 +36,11 @@ public class TankShoot : MonoBehaviour
     private void Shoot()
     {
         Bullet bullet = Instantiate(_bulletTemplate, _spawnpoint.position, Quaternion.identity);
-        bullet.StartMoving(_spawnpoint.position - _muzzleRoot.position, 1f);
+        bullet.StartMoving(_spawnpoint.position - _muzzleRoot.position, _BulletSpeed);
+        transform.DOMoveZ(transform.position.z - _recoilDistance, _delay / 2).SetLoops(2, LoopType.Yoyo);
+
     }
+
+
+
 }
