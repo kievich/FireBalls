@@ -9,6 +9,8 @@ public class TowerBuilder : MonoBehaviour
     [SerializeField] private GameObject _buildPoint;
     [SerializeField] private Material[] _materials = new Material[2];
     [SerializeField] private GameObject _blockCluster;
+    private IBlocksModifying _blockModifier = new BlockScaling();
+
     private float _blockHeight;
 
     private void Awake()
@@ -26,7 +28,7 @@ public class TowerBuilder : MonoBehaviour
             Block block = SpawnBlock(currentSpawnPosition);
             currentSpawnPosition = GetTopPoint(block);
             block.SetMaterial(GetMaterialByNumber(i));
-            //block.transform.rotation *= Quaternion.Euler(0, i * 1f, 0);
+            _blockModifier.ModifyBlock(ref block, i);
             blocks.Enqueue(block);
         }
 
@@ -45,7 +47,7 @@ public class TowerBuilder : MonoBehaviour
 
     private Material GetMaterialByNumber(int currentBlock)
     {
-        if (currentBlock % 2 == 0)
+        if (currentBlock % 2 == 1)
             return _materials[0];
         else
             return _materials[1];

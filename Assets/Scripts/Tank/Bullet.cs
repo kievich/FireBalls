@@ -22,7 +22,7 @@ public class Bullet : MonoBehaviour
     private void Update()
     {
         if (_canMove)
-            transform.Translate(_direction.normalized * _speed);
+            transform.Translate(_direction.normalized * _speed * Time.deltaTime);
     }
 
     private void OnTriggerEnter(Collider other)

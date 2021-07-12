@@ -2,12 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+using System;
+using UnityEngine.SceneManagement;
 
 public class Tower : MonoBehaviour
 {
     private Queue<Block> _blocks = new Queue<Block>();
     [SerializeField] private GameObject _blockCluster;
     private float _blockHeight;
+
+    public event Action<int> ScoreChanged;
+
     private void Start()
     {
         var towerBuilder = gameObject.GetComponent<TowerBuilder>();
@@ -18,22 +23,21 @@ public class Tower : MonoBehaviour
         {
             block.BulletHit += OnBulletHit;
         }
+        ScoreChanged?.Invoke(_blocks.Count);
 
     }
+
 
     private void OnBulletHit()
     {
         _blocks.Peek().BulletHit -= OnBulletHit;
         _blocks.Dequeue();
-
-        //foreach (Block currentBlock in _blocks)
-        //{
-        //    currentBlock.transform.Translate(new Vector3(0, -_blockHeight, 0));
-        //}
-        //transform.Translate(new Vector3(0, -_blockHeight, 0));
         _blockCluster.transform.DOMoveY(_blockCluster.transform.position.y - _blockHeight, 0.1f);
-
-
+        ScoreChanged?.Invoke(_blocks.Count);
+        if (_blocks.Count == 0)
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
     }
 
 
