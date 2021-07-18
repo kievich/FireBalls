@@ -4,31 +4,26 @@ using UnityEngine;
 
 public class TowerBuilder : MonoBehaviour
 {
-    [SerializeField] private int _size;
-    [SerializeField] private Block _blockTemplate;
+
     [SerializeField] private GameObject _buildPoint;
     [SerializeField] private Material[] _materials = new Material[2];
     [SerializeField] private GameObject _blockCluster;
-    private IBlocksModifying _blockModifier = new BlockScaling();
 
     private float _blockHeight;
 
-    private void Awake()
+    public Queue<Block> Build(BuildData buildData)
     {
-        _blockHeight = _blockTemplate.GetComponent<MeshFilter>().sharedMesh.bounds.size.y * _blockTemplate.transform.localScale.y;
-    }
+        FindBlockHeight(buildData.BlockTemplate);
 
-    public Queue<Block> Build()
-    {
         Queue<Block> blocks = new Queue<Block>();
         Vector3 currentSpawnPosition = _buildPoint.transform.position;
 
-        for (int i = 0; i < _size; i++)
+        for (int i = 0; i < buildData.Size; i++)
         {
-            Block block = SpawnBlock(currentSpawnPosition);
+            Block block = SpawnBlock(buildData.BlockTemplate, currentSpawnPosition);
             currentSpawnPosition = GetTopPoint(block);
             block.SetMaterial(GetMaterialByNumber(i));
-            _blockModifier.ModifyBlock(ref block, i);
+            buildData.BlockModifier.ModifyBlock(ref block, i);
             blocks.Enqueue(block);
         }
 
@@ -40,9 +35,14 @@ public class TowerBuilder : MonoBehaviour
         return _blockHeight;
     }
 
-    private Block SpawnBlock(Vector3 spawnpoint)
+    private void FindBlockHeight(Block blockTemplate)
     {
-        return Instantiate(_blockTemplate, spawnpoint + new Vector3(0, _blockHeight / 2f, 0), Quaternion.identity, _blockCluster.transform);
+        _blockHeight = blockTemplate.GetComponent<MeshFilter>().sharedMesh.bounds.size.y * blockTemplate.transform.localScale.y;
+    }
+
+    private Block SpawnBlock(Block blockTemplate, Vector3 spawnpoint)
+    {
+        return Instantiate(blockTemplate, spawnpoint + new Vector3(0, _blockHeight / 2f, 0), Quaternion.identity, _blockCluster.transform);
     }
 
     private Material GetMaterialByNumber(int currentBlock)

@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BlockTwist : IBlocksModifying
+public class BlockTwist : BlocksModifying
 {
-    public void ModifyBlock(ref Block block, int blockNumber)
+    override public void ModifyBlock(ref Block block, int blockNumber)
     {
         float twistDegree = 3;
 

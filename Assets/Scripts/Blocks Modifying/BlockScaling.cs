@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BlockScaling : IBlocksModifying
+public class BlockScaling : BlocksModifying
 {
-    public void ModifyBlock(ref Block block, int blockNumber)
+    override public void ModifyBlock(ref Block block, int blockNumber)
     {
         float scaleFactor = 0.9f;
         if (blockNumber % 2 == 1)

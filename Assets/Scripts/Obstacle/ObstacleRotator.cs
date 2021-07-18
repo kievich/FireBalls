@@ -10,6 +10,6 @@ public class ObstacleRotator : MonoBehaviour
     {
         transform.DORotate(new Vector3(0, 360f, 0), _animationDuraction, RotateMode.FastBeyond360)
             .SetLoops(-1, LoopType.Yoyo)
-            .SetEase(Ease.InOutBack);
+            .SetEase(Ease.Linear);
     }
 }
